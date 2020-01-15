@@ -1,4 +1,4 @@
-Species;Site;Specimen = inventory n°;Sex;Source;Tooth;Tooth;Tooth;Crown;
+Species;Site;Specimen = inventory no;Sex;Source;Tooth;Tooth;Tooth;Crown;
 ;;;;;Tooth;Right / Left;Upper / Lower;M.D. (in mm);B.L. (in mm)
 Pongo pygmaeus;Cleveland Museum of Natural History;623;Male;Original (Mahler);I1;Left;Inferior;8;9.1
 Pongo pygmaeus;Cleveland Museum of Natural History;623;Male;Original (Mahler);I2;Left;Inferior;9;9.6
