@@ -1,0 +1,257 @@
+\documentclass{beamer}
+
+%\setbeamersize{text margin left=7.5mm,text margin right=7.5mm}
+\usepackage{tikz}
+
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{eso-pic}
+\usepackage{mathrsfs}
+\usepackage{url}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{subcaption}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{eurosym}
+\usepackage{bm}
+\usepackage{cooltooltips}
+\usepackage{colordef}
+\usepackage{beamerdefs}
+\usepackage{lvblisting}
+
+
+\newcommand{\matr}[1]{\mathbf{#1}} % undergraduate algebra version
+%\newcommand{\matr}[1]{#1}          % pure math version
+%\newcommand{\matr}[1]{\bm{#1}}     % ISO complying version
+
+% Bibliography
+\usepackage[backend=biber,style=authoryear,sorting=nyt]{biblatex}
+\usepackage[autostyle,autopunct]{csquotes} % For Quotations
+\renewcommand{\mkcitation}[1]{#1} % For correct footcites with csquotes
+\addbibresource{references.bib}
+
+\pgfdeclareimage[height=2cm]{logobig}{template/hulogo}
+\pgfdeclareimage[height=0.7cm]{logosmall}{images/timeuse.png}
+
+
+\setbeamercolor{block body alerted}{bg=alerted text.fg!10}
+\setbeamercolor{block title alerted}{bg=alerted text.fg!20}
+\setbeamercolor{block body}{bg=structure!10}
+\setbeamercolor{block title}{bg=structure!20}
+\setbeamercolor{block body example}{bg=green!10}
+\setbeamercolor{block title example}{bg=green!20}
+\setbeamertemplate{blocks}[rounded][shadow]
+
+\renewcommand{\leftcol}{0.6}
+
+\newcommand\myheading[1]{%
+  \par\smallskip
+  {\large\bfseries#1}\par\smallskip}
+
+
+
+
+% Define Titlepage
+\title[Discriminant Analysis for CoDa]{Discriminant Analysis as an Example of Classification Techniques for Compositional Data}
+
+\authora{Manuel Pfeuffer}
+\authorb{}
+\authorc{}
+
+\def\linka{}
+\def\linkb{}
+\def\linkc{}
+
+\institute{Seminar: Compositional Data Analysis\\
+Humboldt--Universität zu Berlin}
+
+\hypersetup{pdfpagemode=FullScreen}
+
+\begin{document}
+
+% 0-1
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame[plain]{\titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction to Classification and Discriminant Analysis}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% 1-1
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{
+\frametitle{When do we need classification techniques?}
+\begin{figure}
+  \centering
+  \input{../output/classification_problem.tex}
+\end{figure}
+\begin{block}{Classification Problem}
+  Given $n$ observations $x_i = (x_{i1}, \dots, x_{ik})$ with \alert{known} class labels $y_i \in \{1,\dots,g\}$, \alert{predict} the class of an unlabelled observation.
+\end{block}
+}
+
+
+% 1-2
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\frame{
+%\frametitle{Simple approach to classification}
+%\begin{figure}
+%  \centering
+%  \input{../output/how_to_classify.tex}
+%\end{figure}
+%For $j = 1, \dots, g$: 
+%\begin{itemize}
+%  \item[1.] Calculate class sample mean
+%    $\hat{\mu}_j = \frac{1}{n_j} \sum_{i=1}^n I(y_i = j) \cdot x_i$.
+%  \item[2.] Calculate distances $\delta_j(x) = \lVert x - \hat{\mu}_j \rVert$
+%    from sample means.
+%\end{itemize}
+%$\Rightarrow$ Classify as class with the smallest distance.
+%}
+
+
+% 1-3
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{
+\frametitle{A simple approach to classification}
+\begin{figure}
+  \centering
+  \input{../output/how_to_classify_division.tex}
+\end{figure}
+\begin{block}{Discriminant Function and Classifier}
+  $$ \delta_j(x) = \lVert x - \hat{\mu}_j \rVert, \qquad D(x) =
+  \begin{cases}
+    \text{"class 1"},& \text{if } 
+      \delta_1 < \delta_2 \\
+    \text{"class 2"},& \text{otherwise}
+  \end{cases}
+  $$
+\end{block}
+}
+
+
+% 1-4
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{
+\frametitle{A simple approach to classification}
+\begin{figure}
+\centering
+\input{../output/covariance_problem.tex}
+\end{figure}
+\textbf{Problem:}
+\vspace{0.5em}
+\begin{itemize}
+\item $\delta(x)$ only takes into account the $\mu_j$' s
+\item This is problematic for correlated data
+\item[$\Rightarrow$] We should also take into account the $\Sigma_j$'s!
+\end{itemize}
+}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Bayes and Fisher Discriminant Rule}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% 2-1
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{
+\frametitle{Bayes Discriminant Rule}
+\begin{block}{Assumption}
+  Class populations characterized by a density function $f_j$.\\
+  \begin{itemize}
+    \item[$\rightarrow$] Usually $f_j$ assumed mutltivariate normal with $(\mu_j, \Sigma_j)$.
+  \end{itemize}
+\end{block}
+\vspace{0.5em}
+Conditional probability that observation $x$ comes from class $k$:
+  $$ P(G = k|x) = \frac{f_k(x) p_k}{\sum^g_{j=1} f_j(z) p_j} 
+  \quad \text{(Bayes Theorem)}$$
+To compare conditional probabilities:
+$$ \delta_k(x) = \ln f_k(x) + \ln p_k \quad ( \,\propto P(G = k|x) )$$
+$\Rightarrow$ Classify as class with the highest $\delta_k(x)$ (probability)!
+}
+
+
+% 2-2
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{
+\frametitle{Bayes Discriminant Rule: QDA and LDA}
+Plugging in the multivariate normal density for $f_k$:
+\begin{align*}
+  \ln f_k(x) & \propto\,
+    - \frac{1}{2} ln |\Sigma_k| 
+    - \frac{1}{2}(x-\mu_k)^T\Sigma_k^{-1}(x-\mu_k)
+\end{align*}
+\vspace{-0.5em}
+\begin{block}{Bayes Quadratic Discriminant Function}
+  $$ \delta_k^{QDA}(x) = 
+    - \frac{1}{2} \ln |\Sigma_k| 
+    - \frac{1}{2}(x-\mu_k)^T\Sigma_k^{-1}(x-\mu_k) + \ln p_k $$
+\end{block}
+\begin{itemize}
+  \item "Quadratic" because $\delta_k^{QDA}(x)$ is quadratic in $x$.
+  \item \alert{Linear} discriminant analysis assumes $\Sigma_1 = \dots = \Sigma_g$.
+  \item[] $\rightarrow$ The resulting $\delta_k^{LDA}(x)$ is linear in $x$.
+  \item Bayes Discriminant Analysis gives \alert{probabilistic} output.
+\end{itemize}
+}
+
+
+% 2-3
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{
+\frametitle{Bayes Discriminant Rule: Visualization}
+\alert{Note:} Estimate $\mu_j$ and $\Sigma_j$ by group mean and empirical covariance.
+\begin{figure}
+  \includegraphics[width=\textwidth]{../output/simulation_lda.pdf}
+  \caption{LDA on simulated data using \texttt{lda()} from the \texttt{MASS} package.\\
+  \textbf{[To Check: Does that function really implement Bayes LDA?]}}
+\end{figure}
+}
+
+
+% 2-4
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{
+\frametitle{Fisher Discriminant Rule}
+\textbf{Goal:} Find a projection direction $a \in \mathbb{R}^k$ that:
+\vspace{0.3em}
+\begin{itemize}
+  \item[1.] Maximizes spread \alert{between} the group means.
+  \vspace{-0.3em}
+    $$ \matr{S_B} = \frac{1}{n} \sum_{1=j}^g n_j (\mu_j - \mu)(\mu_j - \mu)^T $$ 
+  \vspace{-0.8em}
+  \item[2.] Minimizes the variance \alert{within} the groups.
+    $$ \matr{S_W} = \frac{1}{n} \sum_{1=j}^g n_j \Sigma_j  $$
+\end{itemize}
+\vspace{-0.5em}
+\begin{block}{Maximization Problem}
+$$ \max \, \frac{a^T\matr{S_B}a}{a^T\matr{S_W}a} \quad \text{ for } a \in \mathbb{R}^k, a \neq 0$$
+\end{block}
+
+}
+
+
+% 2-5
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{
+\frametitle{Fisher Discriminant Rule: Visualization}
+}
+
+
+% 2-6
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{
+\frametitle{Summary}
+}
+
+\end{document}
